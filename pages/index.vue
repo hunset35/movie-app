@@ -4,43 +4,91 @@
 
     <!-- search -->
     <div class="container search">
-      <input v-model="searchInput"  type="text" placeholder="Search" @keyup.enter="$fetch">
-      <button v-show=" searchInput !== ''" class="button">Clear Search</button>
+      <input
+        v-model="searchInput"
+        type="text"
+        placeholder="Search"
+        @keyup.enter="$fetch"
+      />
+      <button v-show="searchInput !== ''" class="button" @click="clearSearch">
+        Clear Search
+      </button>
     </div>
 
+    <!-- loading -->
+    <Loading v-if="$fetchState.pending" />
+
     <!-- movies -->
-    <div class="container movies">
+    <div v-if="isSearch" class="container movies">
       <div id="movie-grid" class="movies-grid">
         <div v-for="(movie, index) in movies" :key="index" class="movie">
           <div class="movie-img">
-            <img 
+            <img
               :src="`https://image.tmdb.org/t/p/w500/${movie.poster_path}`"
               alt=""
-            >
+            />
             <p class="review">{{ movie.vote_average }}</p>
-            <p class="overview">{{ movie.overview }}</p>           
-            </div>
-            <div class="movie-info">
-              <p class="movie-title">
-                {{ movie.title.slice(0, 25) }}
-                <span v-if="movie.title.length > 25">...</span>
-              </p>
-              <p class="release">
-                Released:
-                {{
-                  new Date(movie.release_date).toLocaleString('en-us', {
-                    month: 'long',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })
-                }}
-              </p>
-              <NuxtLint 
-                class="button button-light"
-                :to="{name: 'movies-movieid', params: { movieid: movie.id}}"
-              >
+            <p class="overview">{{ movie.overview }}</p>
+          </div>
+          <div class="movie-info">
+            <p class="movie-title">
+              {{ movie.title.slice(0, 25) }}
+              <span v-if="movie.title.length > 25">...</span>
+            </p>
+            <p class="release">
+              Released:
+              {{
+                new Date(movie.release_date).toLocaleString('en-us', {
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric',
+                })
+              }}
+            </p>
+            <NuxtLink
+              class="button button-light"
+              :to="{ name: 'movies-movieid', params: { movieid: movie.id } }"
+            >
               Get More Info
-              </NuxtLint>
+            </NuxtLink>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- search movies -->
+    <div v-else class="container movies">
+      <div id="movie-grid" class="movies-grid">
+        <div v-for="(movie, index) in searchMovies" :key="index" class="movie">
+          <div class="movie-img">
+            <img
+              :src="`https://image.tmdb.org/t/p/w500/${movie.poster_path}`"
+              alt=""
+            />
+            <p class="review">{{ movie.vote_average }}</p>
+            <p class="overview">{{ movie.overview }}</p>
+          </div>
+          <div class="movie-info">
+            <p class="movie-title">
+              {{ movie.title.slice(0, 25) }}
+              <span v-if="movie.title.length > 25">...</span>
+            </p>
+            <p class="release">
+              Released:
+              {{
+                new Date(movie.release_date).toLocaleString('en-us', {
+                  month: 'long',
+                  day: 'numeric',
+                  year: 'numeric',
+                })
+              }}
+            </p>
+            <NuxtLint
+              class="button button-light"
+              :to="{ name: 'movies-movieid', params: { movieid: movie.id } }"
+            >
+              Get More Info
+            </NuxtLint>
           </div>
         </div>
       </div>
@@ -50,63 +98,89 @@
 
 <script>
 import axios from 'axios'
-import Hero from '../components/HeroComponent.vue';
+import Hero from '../components/HeroComponent.vue'
+import Loading from '../components/LoadingComponent.vue'
 export default {
-    name: "IndexPage",
-    components: { Hero },
-    data() {
-      return {
-        movies: [],
-        searchMovies: [],
-        searchInput: '',
-        movieLang: {
-          EN: 'en-US',
-          TW: 'zh-TW'
+  name: 'IndexPage',
+  components: { Hero, Loading },
+  head() {
+    return {
+      title: 'Movie App',
+      meta: [
+        {
+          hid: 'description',
+          name: 'description',
+          content: 'Home page description',
         },
-      }
-    },
-
-    async fetch() {
-      if(this.searchInput === '') {
-        await this.getMovies()
-        return
-      }
-      await this.getSearchMovies()
-
-      // if(this.searchInput !== '') {
-      //   await this.getSearchMovies()
-      // }
-    },
-    computed: {
-      // handleSearch(event) {
-      //   console.log(event)
-      // }
-    },
-    methods: {
-      async getMovies() {
-        const data = axios.get(
-          `https://api.themoviedb.org/3/movie/now_playing?api_key=37ed43a4f8eaa2abd75f9283692947bc&language=${this.movieLang.EN}&page=1`
-        )
-
-        const result = await data
-        result.data.results.forEach(movie => {
-          this.movies.push(movie)
-        })
-        console.log(this.movies)
-      },
-      async getSearchMovies() {
-        const data = axios.get(
-          `https://api.themoviedb.org/3/search/movie?api_key=37ed43a4f8eaa2abd75f9283692947bc&language=en-US&page=1&query=${this.searchInput}`
-        )
-
-        const result = await data
-        result.data.results.forEach((movie) => {
-          this.searchMovies.push(movie)
-        })
-
-        console.log(this.searchMovies)
+        {
+          hid: 'keywords',
+          name: 'keywords',
+          content: 'Home page description',
+        },
+      ],
+    }
+  },
+  data() {
+    return {
+      movies: [],
+      searchMovies: [],
+      searchInput: '',
+      isSearch: true,
+      movieLang: {
+        EN: 'en-US',
+        TW: 'zh-TW',
       },
     }
+  },
+
+  async fetch() {
+    if (this.searchInput === '') {
+      await this.getMovies()
+      return
+    }
+
+    this.isSearch = false
+    await this.getSearchMovies()
+
+    // if(this.searchInput !== '') {
+    //   await this.getSearchMovies()
+    // }
+  },
+
+  fetchDelay: 1000,
+
+  methods: {
+    async getMovies() {
+      const data = axios.get(
+        `https://api.themoviedb.org/3/movie/now_playing?api_key=37ed43a4f8eaa2abd75f9283692947bc&language=${this.movieLang.EN}&page=1`
+      )
+
+      const result = await data
+      result.data.results.forEach((movie) => {
+        this.movies.push(movie)
+      })
+      console.log(this.movies)
+    },
+    async getSearchMovies() {
+      const data = axios.get(
+        `https://api.themoviedb.org/3/search/movie?api_key=37ed43a4f8eaa2abd75f9283692947bc&language=en-US&page=1&query=${this.searchInput}`
+      )
+
+      const result = await data
+      result.data.results.forEach((movie) => {
+        this.searchMovies.push(movie)
+      })
+
+      // this.movies = this.searchMovies
+      console.log(this.searchMovies)
+    },
+
+    clearSearch() {
+      this.searchInput = ''
+      this.searchMovies = []
+      this.isSearch = true
+    },
+  },
 }
 </script>
 
