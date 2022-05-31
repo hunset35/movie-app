@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <Hero />
+    <Hero :movieBanner="movieBanner" />
 
     <!-- search -->
     <div class="container search">
@@ -184,7 +184,7 @@ export default {
       const result = await data
       this.movieBanner = result.data.results
 
-      console.log(this.movieBanner)
+      // console.log(this.movieBanner)
     },
 
     clearSearch() {

@@ -1,10 +1,12 @@
 <template>
     <div class="hero">
-    <!-- <img src="../assets/imgs/movieHero.jpg" alt="" /> -->
+    <img :src="bannerImg" alt="" />
     <div class="text-container">
       <div class="text">
-        <span class="mini-heading">Now Stremaing</span>
-        <h1><span>Now</span> Streaming</h1>
+        <h1 class="title">{{bannerInfo.title || bannerInfo.name || bannerInfo.original_name}}</h1>
+        <!-- <span class="mini-heading">Now Stremaing</span> -->
+        <!-- <h1><span>Now</span> Streaming</h1> -->
+        <p class="overview">{{bannerInfo.overview}}</p>
         <a href="#movie-grid" class="button">View Movies</a>
       </div>
     </div>
@@ -12,8 +14,43 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
     name: 'HeroComponent',
+    props:['movieBanner'],
+
+    data() {
+      return {
+        bannerInfo: '',
+        bannerImg: '',
+        baseUrl: 'https://image.tmdb.org/t/p/original/'
+      }
+    },
+    async fetch() {
+      await this.getMovieBanner()
+      await this.getMovieVideo()
+    },
+    methods: {
+      getMovieBanner() {
+
+        // console.log(this.movieBanner.length)
+        this.bannerInfo = this.movieBanner[Math.floor(Math.random() * this.movieBanner.length)]
+        // console.log(this.bannerInfo)
+        this.bannerImg = this.baseUrl + this.bannerInfo.backdrop_path || this.bannerInfo.poster_path
+    
+      },
+      async getMovieVideo() {
+        
+        const data = axios.get(`https://api.themoviedb.org/3/${
+          this.bannerInfo.media_type === 'tv' ? 'tv' : 'movie'
+        }/${this.bannerInfo.id}/videos?api_key=37ed43a4f8eaa2abd75f9283692947bc`)
+        // .then((res) => res.json())
+        // .catch(error => console.log(error))
+
+        const result = await data
+        console.log(result.data)
+      }
+    }
 }
 </script>
 
@@ -54,6 +91,15 @@ export default {
       max-width: 1400px;
       margin: 0 auto;
     }
+    .title {
+      font-size: 3.5rem;
+      font-weight: bold;
+    }
+    .overview {
+      color: #fff;
+      margin: 10px 0;
+      max-width: 50%;
+    }
     .mini-heading {
       font-weight: 600;
       font-size: 18px;
@@ -80,6 +126,26 @@ export default {
       font-size: 20px;
       align-self: flex-start;
     }
+
+    @media screen and (max-width: 768px) {
+      .title {
+        font-size: 2.5rem;
+      }
+      .overview {
+        max-width: 70%;
+      }
+    }
+
+    @media screen and (max-width: 480px) {
+      .title {
+        font-size: 1.5rem;
+      }
+      .overview {
+        max-width: 90%;
+      }
+    }
+
+    
   }
 }
 </style>
