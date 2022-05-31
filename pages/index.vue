@@ -103,6 +103,37 @@ import Loading from '../components/LoadingComponent.vue'
 export default {
   name: 'IndexPage',
   components: { Hero, Loading },
+  
+  data() {
+    return {
+      movies: [],
+      movieBanner: [],
+      searchMovies: [],
+      searchInput: '',
+      isSearch: true,
+      movieLang: {
+        EN: 'en-US',
+        TW: 'zh-TW',
+      },
+    }
+  },
+
+  async fetch() {
+    await this.fetchNetflixOriginals()
+    if (this.searchInput === '') {
+      await this.getMovies()
+      return
+    }
+
+    this.isSearch = false
+    await this.getSearchMovies()
+
+    
+    // if(this.searchInput !== '') {
+    //   await this.getSearchMovies()
+    // }
+  },
+
   head() {
     return {
       title: 'Movie App',
@@ -120,32 +151,6 @@ export default {
       ],
     }
   },
-  data() {
-    return {
-      movies: [],
-      searchMovies: [],
-      searchInput: '',
-      isSearch: true,
-      movieLang: {
-        EN: 'en-US',
-        TW: 'zh-TW',
-      },
-    }
-  },
-
-  async fetch() {
-    if (this.searchInput === '') {
-      await this.getMovies()
-      return
-    }
-
-    this.isSearch = false
-    await this.getSearchMovies()
-
-    // if(this.searchInput !== '') {
-    //   await this.getSearchMovies()
-    // }
-  },
 
   fetchDelay: 1000,
 
@@ -159,7 +164,7 @@ export default {
       result.data.results.forEach((movie) => {
         this.movies.push(movie)
       })
-      console.log(this.movies)
+      // console.log(this.movies)
     },
     async getSearchMovies() {
       const data = axios.get(
@@ -172,7 +177,14 @@ export default {
       })
 
       // this.movies = this.searchMovies
-      console.log(this.searchMovies)
+      // console.log(this.searchMovies)
+    },
+    async fetchNetflixOriginals() {
+      const data = axios.get(`https://api.themoviedb.org/3/discover/movie?api_key=37ed43a4f8eaa2abd75f9283692947bc&&with_networks=213&language=${this.movieLang.EN}`)
+      const result = await data
+      this.movieBanner = result.data.results
+
+      console.log(this.movieBanner)
     },
 
     clearSearch() {
