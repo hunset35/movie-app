@@ -1,9 +1,9 @@
 <template>
-  <div class="modal-overlay">
+  <div class="modal-overlay" @click="$nuxt.$emit('close-modal')">
  
     <div class="modal">
         <div class="videoView">
-            <VideoPlayer :src="videoUrl">
+            <VideoPlayer :src="videoUrl" :playsinline="playsinline">
     
             </VideoPlayer>
         </div>
@@ -24,7 +24,7 @@
       
       <button>Go Home</button>/ -->
     </div>
-    <div class="close" >
+    <div class="close" @click="$nuxt.$emit('close-modal')" >
         <span>x</span>
         <!-- <img class="close-img" src="~/assets/close-icon.svg" alt="" /> -->
     </div>
@@ -34,7 +34,6 @@
 <script>
 import VideoPlayer from 'nuxt-video-player'
 require('nuxt-video-player/src/assets/css/main.css')
-
 export default {
     props: ['videoInfo'],
     components: {
@@ -42,7 +41,24 @@ export default {
     },
     data() {
         return {
-            videoUrl: `https://www.youtube.com/watch?v=${this.videoInfo.key}`
+            videoUrl: `https://www.youtube.com/watch?v=${this.videoInfo.key}`,
+            playsinline: true,
+            playerOptions: {                         
+                            autoplay: false, 
+                            muted: false, 
+                            loop: false, 
+                            preload: "auto", 
+                            language: "zh-CN",
+                            aspectRatio: "16:9", 
+                            fluid: true,                                                                 
+                            notSupportedMessage: "此视频暂无法播放，请稍后再试", 
+                            controlBar: {
+                                timeDivider: true,
+                                durationDisplay: true,
+                                remainingTimeDisplay: false,
+                                fullscreenToggle: true, 
+                            }
+                          }
         }
     }
 
@@ -56,9 +72,9 @@ export default {
   top: 0;
   bottom: 0;
   left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
+  right: 0; 
+  /* display: flex;
+  justify-content: center; */
   background-color: #000000da;
   z-index: 999;
 }
@@ -67,28 +83,29 @@ export default {
   position: relative;
   text-align: center;
   background-color: #000000da;
-  /* height: 100%; */
-  width: 100%;
+  top: 5%;
+  /* width: 100%; */
   max-width: 1024px;
-  /* margin-top: 10%;
-  padding: 60px 0; */
+  margin: 0 auto;
   border-radius: 20px;
+  /* overflow-y: auto; */
 }
 
 .videoView {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  /* overflow-y: auto; */
 }
 
 .close {
     position: absolute;
-    top: 5%;
-    right: 5%;
-    width: 1.9rem;
-    height: 1.9rem;
+    top: 1%;
+    right: 3%;
+    width: 2rem;
+    height: 2rem;
     background-color: rgb(80, 80, 80);
     color: #fff;
     border-radius: 50%;
@@ -98,5 +115,16 @@ export default {
     cursor: pointer;
     line-height: .5rem;
     font-size: 1rem;
+    pointer-events: none;
+}
+
+.close span {
+  /* pointer-events: none; */
+}
+
+@media screen and (max-width: 900px) {
+  .modal {
+    max-width: 600px;
+  }
 }
 </style>

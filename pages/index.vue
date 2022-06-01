@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <Hero :movieBanner="movieBanner" />
-
+    <VideoModal v-if="showModal" :videoInfo="videoInfo" />
     <!-- search -->
     <div class="container search">
       <input
@@ -51,6 +51,7 @@
             >
               Get More Info
             </NuxtLink>
+            <button @click="openViewModal(movie)">Play {{movie.title}}</button>
           </div>
         </div>
       </div>
@@ -89,6 +90,7 @@
             >
               Get More Info
             </NuxtLint>
+            
           </div>
         </div>
       </div>
@@ -100,9 +102,10 @@
 import axios from 'axios'
 import Hero from '../components/HeroComponent.vue'
 import Loading from '../components/LoadingComponent.vue'
+import VideoModal from '../components/VideoComponent.vue';
 export default {
   name: 'IndexPage',
-  components: { Hero, Loading },
+  components: { Hero, Loading, VideoModal },
   
   data() {
     return {
@@ -111,6 +114,8 @@ export default {
       searchMovies: [],
       searchInput: '',
       isSearch: true,
+      showModal: false,
+      videoInfo: '',
       movieLang: {
         EN: 'en-US',
         TW: 'zh-TW',
@@ -153,7 +158,11 @@ export default {
   },
 
   fetchDelay: 1000,
-
+  created() {
+    this.$nuxt.$on('close-modal', () => {
+      this.showModal = false
+    })
+  },
   methods: {
     async getMovies() {
       const data = axios.get(
@@ -187,11 +196,44 @@ export default {
       // console.log(this.movieBanner)
     },
 
+    async getMovieVideo(movie) {
+        // let videoArr = []
+        const data = axios.get(`https://api.themoviedb.org/3/${
+          movie.media_type === 'tv' ? 'tv' : 'movie'
+        }/${movie.id}/videos?api_key=37ed43a4f8eaa2abd75f9283692947bc&language=en-US`)
+        // .then((res) => res.json())
+        // .catch(error => console.log(error))
+
+        const result = await data
+        // console.log(result.data)
+        result.data.results.forEach(item => {
+          // console.log(item.type === 'Trailer')
+          // return item.type === 'Trailer'
+          if(item.type === 'Trailer') {
+
+            this.videoInfo = item
+          }
+        })
+
+        if(!this.videoInfo) {
+          this.videoInfo = result.data.results[Math.floor(Math.random() * result.data.results.length)]
+        }
+
+        console.log(this.videoInfo)
+      },
+
     clearSearch() {
       this.searchInput = ''
       this.searchMovies = []
       this.isSearch = true
     },
+
+    async openViewModal(movie) {
+      console.log(movie)
+      await this.getMovieVideo(movie)
+      // this.videoInfo = movie
+      this.showModal = true
+    }
   },
 }
 </script>

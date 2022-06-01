@@ -7,11 +7,11 @@
           <!-- <span class="mini-heading">Now Stremaing</span> -->
           <!-- <h1><span>Now</span> Streaming</h1> -->
           <p class="overview">{{bannerInfo.overview}}</p>
-          <a href="#movie-grid" class="button">View Movies</a>
+          <button class="button" @click="handleModal">View Movies</button>
         </div>
       </div>
-      <VideoModal v-show="showModal" :videoInfo="videoInfo" />
-      <button @click="handleModal">show modal</button>
+      <VideoModal v-if="showModal" :videoInfo="videoInfo" />
+      <!-- <button @click="handleModal">show modal</button> -->
     </div>
 </template>
 
@@ -35,7 +35,13 @@ export default {
     },
     async fetch() {
       await this.getMovieBanner()
-      await this.getMovieVideo()
+      await this.getMovieVideo(this.bannerInfo.id)
+    },
+    created() {
+      this.$nuxt.$on('close-modal', () => {
+
+        this.showModal = false
+      })
     },
     methods: {
       getMovieBanner() {
@@ -44,13 +50,13 @@ export default {
         this.bannerInfo = this.movieBanner[Math.floor(Math.random() * this.movieBanner.length)]
         // console.log(this.bannerInfo)
         this.bannerImg = this.baseUrl + this.bannerInfo.backdrop_path || this.bannerInfo.poster_path
-    
+        console.log(this.movieBanner)
       },
-      async getMovieVideo() {
+      async getMovieVideo(movieID) {
         // let videoArr = []
         const data = axios.get(`https://api.themoviedb.org/3/${
           this.bannerInfo.media_type === 'tv' ? 'tv' : 'movie'
-        }/${this.bannerInfo.id}/videos?api_key=37ed43a4f8eaa2abd75f9283692947bc&language=zh-TW`)
+        }/${movieID}/videos?api_key=37ed43a4f8eaa2abd75f9283692947bc&language=en-US`)
         // .then((res) => res.json())
         // .catch(error => console.log(error))
 
@@ -73,7 +79,7 @@ export default {
       },
       handleModal() {
         this.showModal = true
-        console.log(this.showModal)
+        // console.log(this.showModal)
       }
     }
 }

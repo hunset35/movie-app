@@ -44,10 +44,13 @@
 
 <script>
 import axios from 'axios'
-// import Loading from '../components/LoadingComponent.vue'
+import Loading from '../../components/LoadingComponent.vue'
 
 export default {
   name: 'SingleMovie',
+  components: {
+    Loading
+  },
   head() {
     return {
       title: this.movie.title ? this.movie.title : '',
