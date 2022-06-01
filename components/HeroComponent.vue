@@ -1,29 +1,36 @@
 <template>
     <div class="hero">
-    <img :src="bannerImg" alt="" />
-    <div class="text-container">
-      <div class="text">
-        <h1 class="title">{{bannerInfo.title || bannerInfo.name || bannerInfo.original_name}}</h1>
-        <!-- <span class="mini-heading">Now Stremaing</span> -->
-        <!-- <h1><span>Now</span> Streaming</h1> -->
-        <p class="overview">{{bannerInfo.overview}}</p>
-        <a href="#movie-grid" class="button">View Movies</a>
+      <img :src="bannerImg" alt="" />
+      <div class="text-container">
+        <div class="text">
+          <h1 class="title">{{bannerInfo.title || bannerInfo.name || bannerInfo.original_name}}</h1>
+          <!-- <span class="mini-heading">Now Stremaing</span> -->
+          <!-- <h1><span>Now</span> Streaming</h1> -->
+          <p class="overview">{{bannerInfo.overview}}</p>
+          <a href="#movie-grid" class="button">View Movies</a>
+        </div>
       </div>
+      <VideoModal v-show="showModal" :videoInfo="videoInfo" />
+      <button @click="handleModal">show modal</button>
     </div>
-  </div>
 </template>
 
 <script>
 import axios from 'axios'
+import VideoModal from './VideoComponent.vue';
 export default {
     name: 'HeroComponent',
     props:['movieBanner'],
-
+    components:{
+      VideoModal
+    },
     data() {
       return {
         bannerInfo: '',
         bannerImg: '',
-        baseUrl: 'https://image.tmdb.org/t/p/original/'
+        baseUrl: 'https://image.tmdb.org/t/p/original/',
+        showModal: false,
+        videoInfo: ''
       }
     },
     async fetch() {
@@ -40,15 +47,33 @@ export default {
     
       },
       async getMovieVideo() {
-        
+        // let videoArr = []
         const data = axios.get(`https://api.themoviedb.org/3/${
           this.bannerInfo.media_type === 'tv' ? 'tv' : 'movie'
-        }/${this.bannerInfo.id}/videos?api_key=37ed43a4f8eaa2abd75f9283692947bc`)
+        }/${this.bannerInfo.id}/videos?api_key=37ed43a4f8eaa2abd75f9283692947bc&language=zh-TW`)
         // .then((res) => res.json())
         // .catch(error => console.log(error))
 
         const result = await data
         console.log(result.data)
+        result.data.results.forEach(item => {
+          console.log(item.type === 'Trailer')
+          // return item.type === 'Trailer'
+          if(item.type === 'Trailer') {
+
+            this.videoInfo = item
+          }
+        })
+
+        if(!this.videoInfo) {
+          this.videoInfo = result.data.results[Math.floor(Math.random() * result.data.results.length)]
+        }
+
+        console.log(this.videoInfo)
+      },
+      handleModal() {
+        this.showModal = true
+        console.log(this.showModal)
       }
     }
 }
