@@ -1,13 +1,10 @@
 <template>
   <div class="modal-overlay" @click="$nuxt.$emit('close-modal')">
- 
     <div class="modal">
-        <div class="videoView">
-            <VideoPlayer :src="videoUrl" :playsinline="playsinline">
-    
-            </VideoPlayer>
-        </div>
-        <!-- <iframe 
+      <div class="videoView">
+        <VideoPlayer :src="videoUrl" :playsinline="playsinline"> </VideoPlayer>
+      </div>
+      <!-- <iframe 
             width="100%" 
             height="100%" 
             :src="videoUrl" 
@@ -24,9 +21,9 @@
       
       <button>Go Home</button>/ -->
     </div>
-    <div class="close" @click="$nuxt.$emit('close-modal')" >
-        <span>x</span>
-        <!-- <img class="close-img" src="~/assets/close-icon.svg" alt="" /> -->
+    <div class="close" @click="$nuxt.$emit('close-modal')">
+      <span>x</span>
+      <!-- <img class="close-img" src="~/assets/close-icon.svg" alt="" /> -->
     </div>
   </div>
 </template>
@@ -35,34 +32,32 @@
 import VideoPlayer from 'nuxt-video-player'
 require('nuxt-video-player/src/assets/css/main.css')
 export default {
-    props: ['videoInfo'],
-    components: {
-        VideoPlayer
-    },
-    data() {
-        return {
-            videoUrl: `https://www.youtube.com/watch?v=${this.videoInfo.key}`,
-            playsinline: true,
-            playerOptions: {                         
-                            autoplay: false, 
-                            muted: false, 
-                            loop: false, 
-                            preload: "auto", 
-                            language: "zh-CN",
-                            aspectRatio: "16:9", 
-                            fluid: true,                                                                 
-                            notSupportedMessage: "此视频暂无法播放，请稍后再试", 
-                            controlBar: {
-                                timeDivider: true,
-                                durationDisplay: true,
-                                remainingTimeDisplay: false,
-                                fullscreenToggle: true, 
-                            }
-                          }
-        }
+  props: ['videoInfo'],
+  components: {
+    VideoPlayer,
+  },
+  data() {
+    return {
+      videoUrl: `https://www.youtube.com/watch?v=${this.videoInfo.key}`,
+      playsinline: true,
+      playerOptions: {
+        autoplay: false,
+        muted: false,
+        loop: false,
+        preload: 'auto',
+        language: 'zh-CN',
+        aspectRatio: '16:9',
+        fluid: true,
+        notSupportedMessage: '此视频暂无法播放，请稍后再试',
+        controlBar: {
+          timeDivider: true,
+          durationDisplay: true,
+          remainingTimeDisplay: false,
+          fullscreenToggle: true,
+        },
+      },
     }
-
-    
+  },
 }
 </script>
 
@@ -72,7 +67,7 @@ export default {
   top: 0;
   bottom: 0;
   left: 0;
-  right: 0; 
+  right: 0;
   /* display: flex;
   justify-content: center; */
   background-color: #000000da;
@@ -101,21 +96,21 @@ export default {
 }
 
 .close {
-    position: absolute;
-    top: 1%;
-    right: 3%;
-    width: 2rem;
-    height: 2rem;
-    background-color: rgb(80, 80, 80);
-    color: #fff;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    line-height: .5rem;
-    font-size: 1rem;
-    pointer-events: none;
+  position: absolute;
+  top: 1%;
+  right: 3%;
+  width: 2rem;
+  height: 2rem;
+  background-color: rgb(80, 80, 80);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  line-height: 0.5rem;
+  font-size: 1rem;
+  pointer-events: none;
 }
 
 .close span {

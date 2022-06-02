@@ -1,5 +1,6 @@
 <template>
   <div class="home">
+    <!-- <HeadBar /> -->
     <Hero :movieBanner="movieBanner" />
     <VideoModal v-if="showModal" :videoInfo="videoInfo" />
     <!-- search -->
@@ -8,11 +9,17 @@
         v-model="searchInput"
         type="text"
         placeholder="Search"
+        @change="checkSearch"
         @keyup.enter="$fetch"
       />
+      <!-- <div v-show="searchInput !== ''" class="clearBtn" @click="clearSearch">
+        <span>x</span>
+      </div>
+      <div class="searchInput">
+      </div>
       <button v-show="searchInput !== ''" class="button" @click="clearSearch">
         Clear Search
-      </button>
+      </button> -->
     </div>
 
     <!-- loading -->
@@ -28,7 +35,7 @@
               alt=""
             />
             <p class="review">{{ movie.vote_average }}</p>
-            <p class="overview">{{ movie.overview }}</p>
+            <!-- <p class="overview">{{ movie.overview }}</p> -->
           </div>
           <div class="movie-info">
             <p class="movie-title">
@@ -45,13 +52,15 @@
                 })
               }}
             </p>
-            <NuxtLink
+            <!-- <NuxtLink
               class="button button-light"
               :to="{ name: 'movies-movieid', params: { movieid: movie.id } }"
             >
               Get More Info
-            </NuxtLink>
-            <button @click="openViewModal(movie)">Play {{movie.title}}</button>
+            </NuxtLink> -->
+            <button class="button button-light" @click="openViewModal(movie)">
+              {{ $t('ViewMovies') }}
+            </button>
           </div>
         </div>
       </div>
@@ -67,7 +76,7 @@
               alt=""
             />
             <p class="review">{{ movie.vote_average }}</p>
-            <p class="overview">{{ movie.overview }}</p>
+            <!-- <p class="overview">{{ movie.overview }}</p> -->
           </div>
           <div class="movie-info">
             <p class="movie-title">
@@ -84,13 +93,15 @@
                 })
               }}
             </p>
-            <NuxtLint
+            <!-- <NuxtLint
               class="button button-light"
               :to="{ name: 'movies-movieid', params: { movieid: movie.id } }"
             >
               Get More Info
-            </NuxtLint>
-            
+            </NuxtLint> -->
+            <button class="button button-light" @click="openViewModal(movie)">
+              {{ $t('ViewMovies') }}
+            </button>
           </div>
         </div>
       </div>
@@ -102,11 +113,12 @@
 import axios from 'axios'
 import Hero from '../components/HeroComponent.vue'
 import Loading from '../components/LoadingComponent.vue'
-import VideoModal from '../components/VideoComponent.vue';
+import VideoModal from '../components/VideoComponent.vue'
+// import HeadBar from '../components/Nav-bar'
 export default {
   name: 'IndexPage',
   components: { Hero, Loading, VideoModal },
-  
+
   data() {
     return {
       movies: [],
@@ -125,6 +137,7 @@ export default {
 
   async fetch() {
     await this.fetchNetflixOriginals()
+
     if (this.searchInput === '') {
       await this.getMovies()
       return
@@ -133,7 +146,6 @@ export default {
     this.isSearch = false
     await this.getSearchMovies()
 
-    
     // if(this.searchInput !== '') {
     //   await this.getSearchMovies()
     // }
@@ -163,10 +175,11 @@ export default {
       this.showModal = false
     })
   },
+
   methods: {
     async getMovies() {
       const data = axios.get(
-        `https://api.themoviedb.org/3/movie/now_playing?api_key=37ed43a4f8eaa2abd75f9283692947bc&language=${this.movieLang.EN}&page=1`
+        `https://api.themoviedb.org/3/movie/now_playing?api_key=37ed43a4f8eaa2abd75f9283692947bc&language=${this.movieLang.TW}&page=1`
       )
 
       const result = await data
@@ -177,7 +190,7 @@ export default {
     },
     async getSearchMovies() {
       const data = axios.get(
-        `https://api.themoviedb.org/3/search/movie?api_key=37ed43a4f8eaa2abd75f9283692947bc&language=en-US&page=1&query=${this.searchInput}`
+        `https://api.themoviedb.org/3/search/movie?api_key=37ed43a4f8eaa2abd75f9283692947bc&language=${this.movieLang.TW}&page=1&query=${this.searchInput}`
       )
 
       const result = await data
@@ -189,7 +202,9 @@ export default {
       // console.log(this.searchMovies)
     },
     async fetchNetflixOriginals() {
-      const data = axios.get(`https://api.themoviedb.org/3/discover/movie?api_key=37ed43a4f8eaa2abd75f9283692947bc&&with_networks=213&language=${this.movieLang.EN}`)
+      const data = axios.get(
+        `https://api.themoviedb.org/3/discover/movie?api_key=37ed43a4f8eaa2abd75f9283692947bc&&with_networks=213&language=${this.movieLang.TW}`
+      )
       const result = await data
       this.movieBanner = result.data.results
 
@@ -197,31 +212,46 @@ export default {
     },
 
     async getMovieVideo(movie) {
-        // let videoArr = []
-        const data = axios.get(`https://api.themoviedb.org/3/${
+      // let videoArr = []
+      const data = axios.get(
+        `https://api.themoviedb.org/3/${
           movie.media_type === 'tv' ? 'tv' : 'movie'
-        }/${movie.id}/videos?api_key=37ed43a4f8eaa2abd75f9283692947bc&language=en-US`)
-        // .then((res) => res.json())
-        // .catch(error => console.log(error))
+        }/${
+          movie.id
+        }/videos?api_key=37ed43a4f8eaa2abd75f9283692947bc&language=zh-TW`
+      )
 
-        const result = await data
-        // console.log(result.data)
-        result.data.results.forEach(item => {
-          // console.log(item.type === 'Trailer')
-          // return item.type === 'Trailer'
-          if(item.type === 'Trailer') {
+      let result = await data
 
-            this.videoInfo = item
-          }
-        })
+      if (result.data.results.length === 0) {
+        const dataUS = axios.get(
+          `https://api.themoviedb.org/3/${
+            movie.media_type === 'tv' ? 'tv' : 'movie'
+          }/${
+            movie.id
+          }/videos?api_key=37ed43a4f8eaa2abd75f9283692947bc&language=en-US`
+        )
 
-        if(!this.videoInfo) {
-          this.videoInfo = result.data.results[Math.floor(Math.random() * result.data.results.length)]
+        result = await dataUS
+      }
+
+      console.log(result.data)
+      result.data.results.forEach((item) => {
+        if (item.type === 'Trailer') {
+          this.videoInfo = item
         }
+      })
+    },
+    checkSearch(event) {
+      console.log(event.target.value === '')
+      this.searchInput = event.target.value
 
-        console.log(this.videoInfo)
-      },
-
+      console.log(this.searchInput)
+      if (!this.searchInput) {
+        this.searchMovies = []
+        this.isSearch = true
+      }
+    },
     clearSearch() {
       this.searchInput = ''
       this.searchMovies = []
@@ -229,11 +259,9 @@ export default {
     },
 
     async openViewModal(movie) {
-      console.log(movie)
       await this.getMovieVideo(movie)
-      // this.videoInfo = movie
       this.showModal = true
-    }
+    },
   },
 }
 </script>
@@ -246,6 +274,7 @@ export default {
   }
   .search {
     display: flex;
+    position: relative;
     padding: 32px 16px;
     input {
       max-width: 350px;
@@ -260,6 +289,19 @@ export default {
     .button {
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
+    }
+    .clearBtn {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: #ccc;
+      border-radius: 50%;
+      left: 335px;
+      bottom: 43px;
+      display: flex;
+      justify-content: center;
+    }
+    .searchInput {
     }
   }
   .movies {
