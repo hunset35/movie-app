@@ -43,13 +43,9 @@
               <span v-if="movie.title.length > 25">...</span>
             </p>
             <p class="release">
-              Released:
+              {{ $t('released') }}:
               {{
-                new Date(movie.release_date).toLocaleString('en-us', {
-                  month: 'long',
-                  day: 'numeric',
-                  year: 'numeric',
-                })
+                new Date(movie.release_date).toLocaleString('zh-TW', dateOptions)
               }}
             </p>
             <!-- <NuxtLink
@@ -84,13 +80,9 @@
               <span v-if="movie.title.length > 25">...</span>
             </p>
             <p class="release">
-              Released:
+              {{ $t('released') }}:
               {{
-                new Date(movie.release_date).toLocaleString('en-us', {
-                  month: 'long',
-                  day: 'numeric',
-                  year: 'numeric',
-                })
+                new Date(movie.release_date).toLocaleString('zh-TW', dateOptions)
               }}
             </p>
             <!-- <NuxtLint
@@ -132,6 +124,11 @@ export default {
         EN: 'en-US',
         TW: 'zh-TW',
       },
+      dateOptions: {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      }
     }
   },
 
@@ -146,9 +143,6 @@ export default {
     this.isSearch = false
     await this.getSearchMovies()
 
-    // if(this.searchInput !== '') {
-    //   await this.getSearchMovies()
-    // }
   },
 
   head() {
@@ -186,7 +180,7 @@ export default {
       result.data.results.forEach((movie) => {
         this.movies.push(movie)
       })
-      // console.log(this.movies)
+  
     },
     async getSearchMovies() {
       const data = axios.get(
@@ -197,9 +191,7 @@ export default {
       result.data.results.forEach((movie) => {
         this.searchMovies.push(movie)
       })
-
-      // this.movies = this.searchMovies
-      // console.log(this.searchMovies)
+     
     },
     async fetchNetflixOriginals() {
       const data = axios.get(
@@ -208,11 +200,9 @@ export default {
       const result = await data
       this.movieBanner = result.data.results
 
-      // console.log(this.movieBanner)
     },
 
     async getMovieVideo(movie) {
-      // let videoArr = []
       const data = axios.get(
         `https://api.themoviedb.org/3/${
           movie.media_type === 'tv' ? 'tv' : 'movie'
@@ -235,7 +225,6 @@ export default {
         result = await dataUS
       }
 
-      console.log(result.data)
       result.data.results.forEach((item) => {
         if (item.type === 'Trailer') {
           this.videoInfo = item
@@ -243,10 +232,8 @@ export default {
       })
     },
     checkSearch(event) {
-      console.log(event.target.value === '')
       this.searchInput = event.target.value
 
-      console.log(this.searchInput)
       if (!this.searchInput) {
         this.searchMovies = []
         this.isSearch = true
