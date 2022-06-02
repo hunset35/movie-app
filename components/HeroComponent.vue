@@ -59,17 +59,10 @@ export default {
       }, 10000)
     },
     getMovieBanner() {
-      // console.log(this.movieBanner.length)
-      this.bannerInfo =
-        this.movieBanner[Math.floor(Math.random() * this.movieBanner.length)]
-      // console.log(this.bannerInfo)
-      this.bannerImg =
-        this.baseUrl + this.bannerInfo.backdrop_path ||
-        this.bannerInfo.poster_path
-      // console.log(this.movieBanner)
+      this.bannerInfo = this.movieBanner[Math.floor(Math.random() * this.movieBanner.length)]
+      this.bannerImg = this.baseUrl + this.bannerInfo.backdrop_path || this.bannerInfo.poster_path
     },
     async getMovieVideo(movie) {
-      // let videoArr = []
       const data = axios.get(
         `https://api.themoviedb.org/3/${
           movie.media_type === 'tv' ? 'tv' : 'movie'
@@ -92,25 +85,14 @@ export default {
         result = await dataUS
       }
 
-      // console.log(result.data)
       result.data.results.forEach((item) => {
         if (item.type === 'Trailer') {
           this.videoInfo = item
         }
       })
-
-      // if (!this.videoInfo) {
-      //   this.videoInfo =
-      //     result.data.results[
-      //       Math.floor(Math.random() * result.data.results.length)
-      //     ]
-      // }
-
-      // console.log(this.videoInfo)
     },
     handleModal() {
       this.showModal = true
-      // console.log(this.showModal)
     },
   },
 }
