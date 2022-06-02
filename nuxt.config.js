@@ -5,7 +5,7 @@ export default {
   head: {
     title: 'nuxt-movie',
     htmlAttrs: {
-      lang: 'en',
+      lang: 'tw',
     },
     meta: [
       { charset: 'utf-8' },

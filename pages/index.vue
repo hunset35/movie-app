@@ -8,7 +8,7 @@
       <input
         v-model="searchInput"
         type="text"
-        placeholder="Search"
+        :placeholder="$t('search')"
         @change="checkSearch"
         @keyup.enter="$fetch"
       />
@@ -16,10 +16,10 @@
         <span>x</span>
       </div>
       <div class="searchInput">
-      </div>
-      <button v-show="searchInput !== ''" class="button" @click="clearSearch">
-        Clear Search
-      </button> -->
+      </div> -->
+      <button class="button" @click="$fetch">
+        {{ $t('search') }}
+      </button>
     </div>
 
     <!-- loading -->
@@ -269,6 +269,8 @@ export default {
       padding: 12px 6px;
       font-size: 14px;
       border: none;
+       border-top-left-radius: 4px;
+      border-bottom-left-radius: 4px;
       &:focus {
         outline: none;
       }
@@ -276,6 +278,8 @@ export default {
     .button {
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
+      // border-radius: 5px;
+      // margin-left: 10px;
     }
     .clearBtn {
       position: absolute;
