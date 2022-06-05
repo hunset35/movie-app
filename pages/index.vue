@@ -28,13 +28,19 @@
     <!-- movies -->
     <div v-if="isSearch" class="container movies">
       <div id="movie-grid" class="movies-grid">
-        <div v-for="(movie, index) in movies" :key="index" class="movie">
+        <div
+          v-for="(movie, index) in movies"
+          :key="index"
+          class="movie"
+          @click="openViewModal(movie)"
+        >
+          <!-- <div class="movieItem"> -->
           <div class="movie-img">
             <img
               :src="`https://image.tmdb.org/t/p/w500/${movie.poster_path}`"
               alt=""
             />
-            <p class="review">{{ movie.vote_average }}</p>
+            <!-- <p class="review">{{ movie.vote_average }}</p> -->
             <!-- <p class="overview">{{ movie.overview }}</p> -->
           </div>
           <div class="movie-info">
@@ -45,19 +51,23 @@
             <p class="release">
               {{ $t('released') }}:
               {{
-                new Date(movie.release_date).toLocaleString('zh-TW', dateOptions)
+                new Date(movie.release_date).toLocaleString(
+                  'zh-TW',
+                  dateOptions
+                )
               }}
             </p>
             <!-- <NuxtLink
-              class="button button-light"
-              :to="{ name: 'movies-movieid', params: { movieid: movie.id } }"
-            >
-              Get More Info
-            </NuxtLink> -->
-            <button class="button button-light" @click="openViewModal(movie)">
-              {{ $t('ViewMovies') }}
-            </button>
+                    class="button button-light"
+                    :to="{ name: 'movies-movieid', params: { movieid: movie.id } }"
+                  >
+                    Get More Info
+                  </NuxtLink> -->
+            <!-- <button class="button button-light" @click="openViewModal(movie)">
+                  {{ $t('ViewMovies') }}
+                </button> -->
           </div>
+          <!-- </div> -->
         </div>
       </div>
     </div>
@@ -65,7 +75,12 @@
     <!-- search movies -->
     <div v-else class="container movies">
       <div id="movie-grid" class="movies-grid">
-        <div v-for="(movie, index) in searchMovies" :key="index" class="movie">
+        <div
+          v-for="(movie, index) in searchMovies"
+          :key="index"
+          class="movie"
+          @click="openViewModal(movie)"
+        >
           <div class="movie-img">
             <img
               :src="`https://image.tmdb.org/t/p/w500/${movie.poster_path}`"
@@ -82,7 +97,10 @@
             <p class="release">
               {{ $t('released') }}:
               {{
-                new Date(movie.release_date).toLocaleString('zh-TW', dateOptions)
+                new Date(movie.release_date).toLocaleString(
+                  'zh-TW',
+                  dateOptions
+                )
               }}
             </p>
             <!-- <NuxtLint
@@ -91,9 +109,9 @@
             >
               Get More Info
             </NuxtLint> -->
-            <button class="button button-light" @click="openViewModal(movie)">
+            <!-- <button class="button button-light" @click="openViewModal(movie)">
               {{ $t('ViewMovies') }}
-            </button>
+            </button> -->
           </div>
         </div>
       </div>
@@ -125,10 +143,10 @@ export default {
         TW: 'zh-TW',
       },
       dateOptions: {
-        year: "numeric",
-        month: "long",
-        day: "numeric"
-      }
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      },
     }
   },
 
@@ -142,7 +160,6 @@ export default {
 
     this.isSearch = false
     await this.getSearchMovies()
-
   },
 
   head() {
@@ -180,7 +197,6 @@ export default {
       result.data.results.forEach((movie) => {
         this.movies.push(movie)
       })
-  
     },
     async getSearchMovies() {
       const data = axios.get(
@@ -191,7 +207,6 @@ export default {
       result.data.results.forEach((movie) => {
         this.searchMovies.push(movie)
       })
-     
     },
     async fetchNetflixOriginals() {
       const data = axios.get(
@@ -199,7 +214,6 @@ export default {
       )
       const result = await data
       this.movieBanner = result.data.results
-
     },
 
     async getMovieVideo(movie) {
@@ -212,7 +226,7 @@ export default {
       )
 
       let result = await data
-
+      console.log(result)
       if (result.data.results.length === 0) {
         const dataUS = axios.get(
           `https://api.themoviedb.org/3/${
@@ -269,7 +283,7 @@ export default {
       padding: 12px 6px;
       font-size: 14px;
       border: none;
-       border-top-left-radius: 4px;
+      border-top-left-radius: 4px;
       border-bottom-left-radius: 4px;
       &:focus {
         outline: none;
@@ -278,6 +292,7 @@ export default {
     .button {
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
+      min-width: 60px;
       // border-radius: 5px;
       // margin-left: 10px;
     }
@@ -297,11 +312,13 @@ export default {
   }
   .movies {
     padding: 32px 16px;
+
     .movies-grid {
       display: grid;
       column-gap: 32px;
       row-gap: 64px;
       grid-template-columns: 1fr;
+
       @media (min-width: 500px) {
         grid-template-columns: repeat(2, 1fr);
       }
@@ -315,6 +332,21 @@ export default {
         position: relative;
         display: flex;
         flex-direction: column;
+        cursor: pointer;
+        transition-duration: 0.3s;
+        &:hover {
+          transform: scale(1.05);
+        }
+        .movieItem {
+          // position: relative;
+          // display: flex;
+          // flex-direction: column;
+          // cursor: pointer;
+          // transition-duration: 0.3s;
+          // &:hover {
+          //   transform: scale(1.05);
+          // }
+        }
         .movie-img {
           position: relative;
           overflow: hidden;

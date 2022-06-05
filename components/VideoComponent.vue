@@ -5,25 +5,24 @@
         <VideoPlayer :src="videoUrl" :playsinline="playsinline"> </VideoPlayer>
       </div>
       <!-- <iframe 
-            width="100%" 
-            height="100%" 
-            :src="videoUrl" 
-            title="YouTube video player" 
-            frameborder="0" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-            allowfullscreen
-        >
-        </iframe> -->
+              width="100%" 
+              height="100%" 
+              :src="videoUrl" 
+              title="YouTube video player" 
+              frameborder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              allowfullscreen
+          >
+          </iframe> -->
       <!-- <img class="check" src="~/assets/check-icon.png" alt="" />
-      <h6>Saved!</h6>
-      <p>Your Details have been saved Successfully</p>
-      <p>{{videoInfo}}</p>
-      
-      <button>Go Home</button>/ -->
+        <h6>Saved!</h6>
+        <p>Your Details have been saved Successfully</p>
+        <p>{{videoInfo}}</p>
+        
+        <button>Go Home</button>/ -->
     </div>
-    <div class="close" @click="$nuxt.$emit('close-modal')">
+    <div v-if="mobileCheck()" class="close" @click="$nuxt.$emit('close-modal')">
       <span>x</span>
-      <!-- <img class="close-img" src="~/assets/close-icon.svg" alt="" /> -->
     </div>
   </div>
 </template>
@@ -40,6 +39,7 @@ export default {
     return {
       videoUrl: `https://www.youtube.com/watch?v=${this.videoInfo.key}`,
       playsinline: true,
+      isMobile: false,
       playerOptions: {
         autoplay: false,
         muted: false,
@@ -58,10 +58,22 @@ export default {
       },
     }
   },
+  methods: {
+    mobileCheck() {
+      if (
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent
+        )
+      ) {
+        this.isMobile = true
+      }
+      return this.isMobile
+    },
+  },
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -71,7 +83,7 @@ export default {
   /* display: flex;
   justify-content: center; */
   background-color: #000000da;
-  z-index: 999;
+  z-index: 99;
 }
 
 .modal {
@@ -91,7 +103,8 @@ export default {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100vh;
+  // height: 100vh;
+  height: 100%;
   /* overflow-y: auto; */
 }
 
@@ -111,6 +124,11 @@ export default {
   line-height: 0.5rem;
   font-size: 1rem;
   pointer-events: none;
+  z-index: 999;
+  cursor: pointer;
+  &:hover {
+    background-color: #eee;
+  }
 }
 
 .close span {
